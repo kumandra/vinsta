@@ -1,8 +1,8 @@
-import { checkInfoVirtualMachine } from './qemu/checkInfoVirtualMachine';
-import { createVirtualMachine } from './qemu/createVirtualMachine'; // Adjust the path if needed
-import { removeVirtualMachine } from './qemu/removeVirtualMachine';
-import { startVirtualMachine } from './qemu/startVirtualMachine';
-import { stopVirtualMachine } from './qemu/stopVirtualMachine';
+import { checkInfoVirtualMachine } from './vm/checkInfoVirtualMachine';
+import { createVirtualMachine } from './vm/createVirtualMachine'; // Adjust the path if needed
+import { removeVirtualMachine } from './vm/removeVirtualMachine';
+import { startVirtualMachine } from './vm/startVirtualMachine';
+import { stopVirtualMachine } from './vm/stopVirtualMachine';
 import type { VMOptions } from './types/VMOptionsType';
 
 

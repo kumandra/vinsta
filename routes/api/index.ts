@@ -1,9 +1,9 @@
 import type { Request, response, Response } from "express";
-import { createVirtualMachine } from "../../qemu/createVirtualMachine";
-import { removeVirtualMachine } from "../../qemu/removeVirtualMachine";
-import { startVirtualMachine } from "../../qemu/startVirtualMachine";
-import { stopVirtualMachine } from "../../qemu/stopVirtualMachine";
-import { checkInfoVirtualMachine } from "../../qemu/checkInfoVirtualMachine";
+import { createVirtualMachine } from "../../vm/createVirtualMachine";
+import { removeVirtualMachine } from "../../vm/removeVirtualMachine";
+import { startVirtualMachine } from "../../vm/startVirtualMachine";
+import { stopVirtualMachine } from "../../vm/stopVirtualMachine";
+import { checkInfoVirtualMachine } from "../../vm/checkInfoVirtualMachine";
 
 export const createVM = async (req: Request, res: Response) => {
   // console.log(req.body);
@@ -69,7 +69,6 @@ export const stopVM = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Error stopping the VM", error });
   }
 };
-
 
 export const checkInfoVM = async (req: Request, res: Response) => {
   try {
