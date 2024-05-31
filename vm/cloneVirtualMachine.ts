@@ -1,14 +1,7 @@
 import { exec } from 'child_process'; // Assuming child_process for execution
 
-import { copyFile } from 'fs/promises';
 import type { VMOptionsV2 } from '../types/VMOptionsV2';
 import { delay } from '../utils/delay';
-
-async function copyImage(sourceImagePath: string, targetImagePath: string) {
-  console.log(`Copying image from "${sourceImagePath}" to "${targetImagePath}"...`);
-  await copyFile(sourceImagePath, targetImagePath);
-  console.log(`Image copied successfully.`);
-}
 
 
 export const cloneVirtualMachine = async (options: VMOptionsV2): Promise<void> => {
