@@ -42,7 +42,7 @@ Vinsta empowers you to automate the provisioning, configuration, and management 
     ```
 4. Build vinsta:
     ```sh
-    bun build
+    bun run build
     ```
 5. Start vinsta:
     ```sh
