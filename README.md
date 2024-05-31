@@ -52,9 +52,10 @@ Vinsta empowers you to automate the provisioning, configuration, and management 
 
 ## Basic API Usage
 
-### - Create instance
+#### Create a Virtual Machine
 
-#### POST /api/create/
+<details close="close">
+<summary><b>POST</b> /api/create</summary>
 
 ```json
 {
@@ -68,10 +69,12 @@ Vinsta empowers you to automate the provisioning, configuration, and management 
     "arch": "x64"
 }
 ```
+</details>
 
-### - Clone instance
+#### Clone a Virtual Machine
 
-#### POST /api/clone/
+<details close="close">
+<summary><b>POST</b> /api/clone</summary>
 
 ```json
 {
@@ -82,56 +85,69 @@ Vinsta empowers you to automate the provisioning, configuration, and management 
   "cpu": "8"
 }
 ```
+</details>
 
-### - Start instance
 
-#### POST /api/start/
+#### Start a Virtual Machine
 
-```json
-{
-    "name": "koompi-vm-1",
-}
-```
-
-### - Stop instance
-
-#### POST /api/stop/
+<details close="close">
+<summary><b>POST</b> /api/start</summary>
 
 ```json
 {
-    "name": "koompi-vm-1",
+  "name": "koompi-vm1",
 }
 ```
+</details>
 
-### - Remove instance
+#### Stop a Virtual Machine
 
-#### POST /api/remove/
+<details close="close">
+<summary><b>POST</b> /api/stop</summary>
 
 ```json
 {
-    "name": "koompi-vm-1",
+  "name": "koompi-vm1",
 }
 ```
+</details>
 
-### - Check Info instance
+#### Remove a Virtual Machine
 
-#### POST /api/checkinfo/
+<details close="close">
+<summary><b>POST</b> /api/remove</summary>
 
 ```json
 {
-    "name": "koompi-vm-1",
+  "name": "koompi-vm1",
 }
 ```
+</details>
 
-### - List all instances
+#### Check Info of the Virtual Machine
 
-#### GET /api/listall/
+<details close="close">
+<summary><b>POST</b> /api/checkinfo</summary>
 
 ```json
 {
-    
+  "name": "koompi-vm1",
 }
 ```
+</details>
+
+
+#### List all of the Virtual Machine
+
+<details close="close">
+<summary><b>GET</b> /api/listall</summary>
+
+```json
+{
+}
+```
+</details>
+
 
 ## Documentation
 
