@@ -1,0 +1,2 @@
+remove SSH Known Host after install the OS in short after stop the vm when finished install, and when calling start_vm()
+we remove ~/.ssh/known_host and the contain IPaddress of the virtual machine
