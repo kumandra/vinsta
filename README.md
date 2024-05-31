@@ -27,6 +27,10 @@ Vinsta empowers you to automate the provisioning, configuration, and management 
 - Network: (NAT, BRIDGE(br0))
 
 ### Installation
+0. Install bun:
+    ```sh
+    curl -fsSL https://bun.sh/install | bash # for macOS, Linux, and WSL
+    ```
 
 1. Clone the repository:
     ```sh
