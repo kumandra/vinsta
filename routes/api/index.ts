@@ -4,6 +4,8 @@ import { removeVirtualMachine } from "../../vm/removeVirtualMachine";
 import { startVirtualMachine } from "../../vm/startVirtualMachine";
 import { stopVirtualMachine } from "../../vm/stopVirtualMachine";
 import { checkInfoVirtualMachine } from "../../vm/checkInfoVirtualMachine";
+import { cloneVirtualMachine } from "../../vm/cloneVirtualMachine";
+import type { VMOptionsV2 } from '../../types/VMOptionsV2';
 
 export const createVM = async (req: Request, res: Response) => {
   // console.log(req.body);
@@ -84,8 +86,22 @@ export const checkInfoVM = async (req: Request, res: Response) => {
   }
 };
 
-export const cloneVM = (req: Request, res: Response) => {
-  // logic to delete user by ID from the database
+export const cloneVM = async (req: Request, res: Response) => {
+  try {
+    const VMOptionsV2 = {
+      image: req.body.image || "koompi",
+      name: req.body.name || "default_name",
+      ram: req.body.ram,
+      disk: req.body.disk,
+      cpu: req.body.cpu,
+    };
+
+    const cloneVM = await cloneVirtualMachine(VMOptionsV2);
+    res.status(201).json({ message: "Clone the virtual machine", vm: cloneVM });
+  } catch (error) {
+    console.error("Error clone VM:", error);
+    res.status(500).json({ message: "Error failed to clone the virtual machine", error });
+  }
 };
 
 export const listAllVM = (req: Request, res: Response) => {

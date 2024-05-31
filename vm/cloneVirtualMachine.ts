@@ -1,21 +1,50 @@
-import { executeCommand } from '../shells/executeCommand';
-import type { VMOptions } from '../types/VMOptionsType';
+import { exec } from 'child_process'; // Assuming child_process for execution
 
-export const cloneVirtualMachine = async (options: VMOptions): Promise<void> => {
-  const { name = "koompi" } = options;
+import { copyFile } from 'fs/promises';
+import type { VMOptionsV2 } from '../types/VMOptionsV2';
+import { delay } from '../utils/delay';
 
+async function copyImage(sourceImagePath: string, targetImagePath: string) {
+  console.log(`Copying image from "${sourceImagePath}" to "${targetImagePath}"...`);
+  await copyFile(sourceImagePath, targetImagePath);
+  console.log(`Image copied successfully.`);
+}
+
+
+export const cloneVirtualMachine = async (options: VMOptionsV2): Promise<void> => {
+  const { image = "koompi", name, cpu, ram, disk } = options; // Destructure options
   try {
-    // Check if VM exists 
-    const vmExistsOutput = await executeCommand(`virsh dominfo ${name}`);
-    if (!vmExistsOutput.includes('Name:')) {
-      throw new Error(`Virtual machine "${name}" not found`);
-    }
+    // Use virt-clone to create a new VM from the copied image
+    console.log(`Creating new VM "${name}" using virt-clone...`);
+    await exec(`virt-clone --original ${image} --name ${name} --auto-clone`, (error, stdout, stderr) => {
+      if (error) {
+        console.error(`Error cloning VM with virt-clone: ${error.message}`);
+        return;
+      }
+      console.log(stdout); // Optional: Log virt-clone output for debugging
+    });
+    
+    delay(1000);
+    // Set the Maximum CPU before set it
+    await exec(`virsh setvcpu ${name} ${cpu} --config --maximum`)
+    await exec(`virsh setvcpu ${name} ${cpu} --config`)
 
-    // Stop the virtual machine
-    await executeCommand(`virsh stop ${name}`);
-    console.log(`Virtual machine "${name}" stopped successfully.`);
+    // Set the Maximum RAM before set it
+    await exec(`virsh setmaxmem ${name} ${ram} --config --maximum`)
+    await exec(`virsh setmem ${name} ${ram} --config`)
+
+    // TODO: Update Storage
+
+    // Configure the new VM properties (implementation depends on your tool)
+    console.log(`Configuring new VM with options:`);
+    // ... Implement logic to configure the new VM using newVmOptions ...
+
+    // Start the new VM (implementation depends on your tool)
+    console.log(`Starting the new VM: "${name}"`);
+    // ... Implement logic to start the VM using your VM management tool ...
+
   } catch (error) {
-    console.error(`Error stopping virtual machine "${name}":`, (error as Error).message);
-    // Handle other potential errors here (e.g., permission issues)
+    console.error(`Error cloning virtual machine "${name}":`, (error as Error).message);
+    // Handle potential errors (e.g., file not found, permission issues)
   }
 };
