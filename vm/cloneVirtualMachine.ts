@@ -8,6 +8,8 @@ export const cloneVirtualMachine = async (options: VMOptionsV2): Promise<void> =
   const { image = "koompi", name, cpu, ram, disk } = options; // Destructure options
   try {
     // Use virt-clone to create a new VM from the copied image
+    // try to find a way to clone from one destination to another destination
+    // like from pre-images to images
     console.log(`Creating new VM "${name}" using virt-clone...`);
     await exec(`virt-clone --original ${image} --name ${name} --auto-clone`, (error, stdout, stderr) => {
       if (error) {

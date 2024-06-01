@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>REST API Client</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 50px;
+        }
+        .container {
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 5px;
+            max-width: 800px;
+            margin: auto;
+        }
+        .api-method {
+            font-weight: bold;
+            margin-top: 20px;
+        }
+        .request-body {
+            margin-top: 10px;
+        }
+        .response {
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-top: 20px;
+            font-family: MartianMono NerdFont;
+            white-space: pre-wrap;
+            background-color: #f7f7f7;
+        }
+        textarea {
+            width: 100%;
+            height: 200px;
+            font-family: MartianMono NerdFont;
+            font-size: 14px;
+        }
+        select, input[type="text"], button {
+            margin-top: 10px;
+            display: block;
+            width: 100%;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>REST API Client</h1>
+    <div class="container">
+        <div class="api-method">Select API endpoint:</div>
+        <select id="apiEndpoint">
+            <option value="/api/create" data-method="POST">Create Virtual Machine (POST)</option>
+            <option value="/api/clone" data-method="POST">Clone Virtual Machine (POST)</option>
+            <option value="/api/start" data-method="POST">Start Virtual Machine (POST)</option>
+            <option value="/api/stop" data-method="POST">Stop Virtual Machine (POST)</option>
+            <option value="/api/remove" data-method="POST">Remove Virtual Machine (POST)</option>
+            <option value="/api/checkinfo" data-method="POST">Check Virtual Machine Info (POST)</option>
+            <option value="/api/listall" data-method="GET">List All Virtual Machines (GET)</option>
+        </select>
+
+        <div class="api-method">Request Method:</div>
+        <input type="text" id="requestMethod" readonly>
+
+        <div class="api-method">Content-Type:</div>
+        <select id="contentType">
+            <option value="No Body">No Body</option>
+            <option value="application/x-www-form-urlencoded">Form URL Encoded</option>
+            <option value="multipart/form-data">Multipart Form</option>
+            <option value="text/plain">Plain Text</option>
+            <option value="application/json" selected>JSON</option>
+            <option value="application/graphql">GraphQL</option>
+            <option value="application/octet-stream">Binary File</option>
+        </select>
+
+        <div id="requestBodySection" class="request-body">
+            <div class="api-method">Request Body (JSON):</div>
+            <textarea id="jsonInput"></textarea>
+        </div>
+        <button onclick="sendRequest()">Send Request</button>
+        <div id="responseSection" class="response"></div>
+    </div>
+
+    <script>
+        const apiEndpointSelect = document.getElementById('apiEndpoint');
+        const requestBodySection = document.getElementById('requestBodySection');
+        const responseSection = document.getElementById('responseSection');
+        const requestMethod = document.getElementById('requestMethod');
+
+        const templates = {
+            '/api/create': `{
+    "name": "koompi-vm-1",
+    "iso": "koompi",
+    "ram": "4096",
+    "disk": "15G",
+    "cpu": "2",
+    "network": "br10",
+    "bootOption": "uefi",
+    "arch": "x64"
+}`,
+            '/api/clone': `{
+    "source": "source-vm-name",
+    "target": "target-vm-name"
+}`,
+            '/api/start': `{
+    "name": "vm-name"
+}`,
+            '/api/stop': `{
+    "name": "vm-name"
+}`,
+            '/api/remove': `{
+    "name": "vm-name"
+}`,
+            '/api/checkinfo': `{
+    "name": "vm-name"
+}`
+        };
+
+        apiEndpointSelect.addEventListener('change', function() {
+            const selectedOption = apiEndpointSelect.options[apiEndpointSelect.selectedIndex];
+            const selectedEndpoint = selectedOption.value;
+            const method = selectedOption.getAttribute('data-method');
+            requestMethod.value = method;
+            populateRequestBody(selectedEndpoint);
+        });
+
+        function populateRequestBody(endpoint) {
+            const template = templates[endpoint];
+            if (template) {
+                document.getElementById('jsonInput').value = template;
+            } else {
+                document.getElementById('jsonInput').value = '';
+            }
+        }
+
+        function sendRequest() {
+            const selectedEndpoint = apiEndpointSelect.value;
+            const method = requestMethod.value;
+            const url = 'http://localhost:3333' + selectedEndpoint; // Replace with your API server URL
+
+            let requestBody = null;
+            if (method === 'POST' || method === 'PUT') {
+                requestBody = document.getElementById('jsonInput').value;
+            }
+
+            fetch(url, {
+                method: method,
+                headers: {
+                    'Content-Type': document.getElementById('contentType').value
+                },
+                body: requestBody
+            })
+            .then(response => response.text())
+            .then(data => {
+                responseSection.textContent = data;
+            })
+            .catch(error => {
+                responseSection.textContent = 'Error: ' + error.message;
+            });
+        }
+
+        // Initial population based on default selection
+        const initialSelectedOption = apiEndpointSelect.options[apiEndpointSelect.selectedIndex];
+        requestMethod.value = initialSelectedOption.getAttribute('data-method');
+        populateRequestBody(apiEndpointSelect.value);
+    </script>
+</body>
+</html>

@@ -3,14 +3,14 @@ import vmRoutes from "./routes/vmRoutes";
 
 import dotenv from 'dotenv/config'
 
-const config = dotenv // will return an object
+const config = dotenv;
 const app = express();
 
 app.use(express.json());
 
 app.use("/api", vmRoutes);
-
-const PORT = Number(process.env.PORT || 3000); // Ensure PORT is a number
+app.use(express.static(__dirname + '/public'));
+const PORT = Number(process.env.PORT || 3000); 
 const HOST = process.env.HOST || 'localhost';
 
 app.listen(PORT, HOST, () => {
