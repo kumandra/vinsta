@@ -3,10 +3,16 @@ import { delay } from "../utils/delay";
 import type { VMOptions } from "../types/VMOptionsType";
 import { executeCommand } from "../shells/executeCommand";
 
+// Define the type of the object being returned
+interface VMCreationResponse {
+  sshcmd?: string;
+  sshPassword?: string;
+}
+
 // Function to create virtual machine
 export const createVirtualMachine = async (
   options: VMOptions
-): Promise<{ message: string; ipAddress?: string; sshCommand?: string; sshPassword?: string, }> => {
+): Promise<{ sshcmd?: string; sshUsername?: string;  sshPassword?: string, }> => {
   const {
     name,
     iso = "koompi",
@@ -78,8 +84,8 @@ export const createVirtualMachine = async (
     await executeCommand(`virsh autostart ${name}`);
 
     // Delay for 10 seconds to allow the VM to start up
-    // await new Promise(resolve => setTimeout(resolve, 10000));
-    await delay(10000);
+    await new Promise(resolve => setTimeout(resolve, 10000));
+    // await delay(10000);
 
     // Get the IP address of the VM
     const ipCommand = `virsh domifaddr ${name}`;
@@ -101,12 +107,14 @@ export const createVirtualMachine = async (
     const sshCommand = ipAddress && iso.startsWith("koompi")
     ? `ssh koompilive@${ipAddress}`
     : undefined;
+        // Assign sshCommand to sshcmd
+        const sshcmd = sshCommand;
+        const sshUsername = "koompilive";
     const sshPassword = "123";
   // Return an object containing success message, IP address (if found), and SSH command (if applicable)
   return {
-    message: "VM created successfully",
-    ipAddress,
-    sshCommand,
+    sshcmd,
+    sshUsername,
     sshPassword,
   };
 

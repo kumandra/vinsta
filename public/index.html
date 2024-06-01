@@ -32,7 +32,6 @@
             font-family: MartianMono NerdFont;
             font-size: 14px;
             white-space: pre-wrap;
-            
         }
         .response {
             border: 1px solid #ddd;
@@ -59,7 +58,6 @@
             font-family: MartianMono NerdFont;
             font-size: 14px;
             white-space: pre-wrap;
-
         }
         .requestMethod {
             padding: 10px;
@@ -70,7 +68,10 @@
             font-size: 14px;
             white-space: pre-wrap;
             margin-top: 10px;
-            
+        }
+        .loading {
+            display: none;
+            text-align: center;
         }
     </style>
 </head>
@@ -107,6 +108,7 @@
             <textarea id="jsonInput"></textarea>
         </div>
         <button onclick="sendRequest()">Send Request</button>
+        <div class="loading" id="loading">Loading...</div>
         <div id="responseSection" class="response"></div>
     </div>
 
@@ -115,44 +117,46 @@
         const requestBodySection = document.getElementById('requestBodySection');
         const responseSection = document.getElementById('responseSection');
         const requestMethod = document.getElementById('requestMethod');
-
+        const loadingIndicator = document.getElementById('loading');
+    
         const templates = {
             '/api/create': `{
-    "name": "koompi-vm-1",
-    "iso": "koompi",
-    "ram": "4096",
-    "disk": "15G",
-    "cpu": "2",
-    "network": "br10",
-    "bootOption": "uefi",
-    "arch": "x64"
-}`,
+        "name": "koompi-vm-1",
+        "iso": "koompi",
+        "ram": "4096",
+        "disk": "15G",
+        "cpu": "2",
+        "network": "br10",
+        "bootOption": "uefi",
+        "arch": "x64"
+    }`,
             '/api/clone': `{
-    "source": "source-vm-name",
-    "target": "target-vm-name"
-}`,
+        "source": "source-vm-name",
+        "target": "target-vm-name"
+    }`,
             '/api/start': `{
-    "name": "vm-name"
-}`,
+        "name": "vm-name"
+    }`,
             '/api/stop': `{
-    "name": "vm-name"
-}`,
+        "name": "vm-name"
+    }`,
             '/api/remove': `{
-    "name": "vm-name"
-}`,
+        "name": "vm-name"
+    }`,
             '/api/checkinfo': `{
-    "name": "vm-name"
-}`
+        "name": "vm-name"
+    }`
         };
-
+    
         apiEndpointSelect.addEventListener('change', function() {
             const selectedOption = apiEndpointSelect.options[apiEndpointSelect.selectedIndex];
             const selectedEndpoint = selectedOption.value;
             const method = selectedOption.getAttribute('data-method');
+            requestMethod.value = method
             requestMethod.value = method;
             populateRequestBody(selectedEndpoint);
         });
-
+    
         function populateRequestBody(endpoint) {
             const template = templates[endpoint];
             if (template) {
@@ -161,41 +165,76 @@
                 document.getElementById('jsonInput').value = '';
             }
         }
-
-        function sendRequest() {
-            const selectedEndpoint = apiEndpointSelect.value;
-            const method = requestMethod.value;
-            // const url = 'http://localhost:3333' + selectedEndpoint; // Replace with your API server URL
-
-            const host = window.location.hostname;
-            const port = window.location.port;
-            const url = 'http://' + host + ':' + port + selectedEndpoint;
-
-            let requestBody = null;
-            if (method === 'POST' || method === 'PUT') {
-                requestBody = document.getElementById('jsonInput').value;
-            }
-
-            fetch(url, {
-                method: method,
-                headers: {
-                    'Content-Type': document.getElementById('contentType').value
-                },
-                body: requestBody
-            })
-            .then(response => response.text())
-            .then(data => {
-                responseSection.textContent = data;
-            })
-            .catch(error => {
-                responseSection.textContent = 'Error: ' + error.message;
-            });
+        function delay(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
         }
-
+    
+    
+        async function sendRequest() {
+            try {
+                const selectedEndpoint = apiEndpointSelect.value;
+                const method = requestMethod.value;
+                const host = window.location.hostname;
+                const port = window.location.port;
+                const url = 'http://' + host + ':' + port + selectedEndpoint;
+                let requestBody = null;
+    
+                if (method === 'POST' || method === 'PUT') {
+                    requestBody = document.getElementById('jsonInput').value;
+                }
+    
+                // Display loading indicator
+                loadingIndicator.style.display = 'block';
+    
+                let response;
+    
+                if (selectedEndpoint === '/api/create') {
+    
+                    
+    
+                    response = await fetch(url, {
+                        method: method,
+                        headers: {
+                            'Content-Type': document.getElementById('contentType').value
+                        },
+                        body: requestBody
+                    });
+    
+                } else {
+                    // For other endpoints, make the actual fetch request
+    
+                    response = await fetch(url, {
+                        method: method,
+                        headers: {
+                            'Content-Type': document.getElementById('contentType').value
+                        },
+                        body: requestBody
+                    });
+                }
+    
+                // Hide loading indicator
+                loadingIndicator.style.display = 'none';
+    
+                // Check if the request was successful
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+    
+                const responseData = await response.json();
+    
+                // Display the response
+                responseSection.textContent = JSON.stringify(responseData, null, 4); // Pretty print with 4 spaces indentation
+            } catch (error) {
+                // Display error message
+                responseSection.textContent = 'Error: ' + error.message;
+            }
+        }
+    
         // Initial population based on default selection
         const initialSelectedOption = apiEndpointSelect.options[apiEndpointSelect.selectedIndex];
         requestMethod.value = initialSelectedOption.getAttribute('data-method');
         populateRequestBody(apiEndpointSelect.value);
     </script>
+    
 </body>
 </html>
