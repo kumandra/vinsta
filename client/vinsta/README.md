@@ -1,6 +1,6 @@
 # Vinsta Command Line Tool
 
-Vinsta is a command line tool designed to streamline virtual machine management tasks. With Vinsta, you can easily create, remove, start, and stop virtual machines with just a few simple commands.
+A command line tool designed to streamline virtual machine management tasks. With Vinsta, you can easily create, remove, start, and stop virtual machines with just a few simple commands.
 
 ### Installation
 
