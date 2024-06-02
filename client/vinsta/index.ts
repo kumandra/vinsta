@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+#!/usr/bin/env bun
 
 import { Command } from "commander";
 import { createVirtualMachine, stopVirtualMachine, startVirtualMachine, removeVirtualMachine, checkInfoVirtualMachine} from "./cmd";
@@ -59,4 +59,3 @@ if (options.listall) {
 if (options.config) {
   listallVirtualMachine();
 }
-
