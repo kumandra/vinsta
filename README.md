@@ -153,6 +153,11 @@ Vinsta empowers you to automate the provisioning, configuration, and management 
 </details>
 
 
+## Access Rest API UI Client
+#### http://localhost:3333
+
+![image info](./assets/localhost.png)
+
 ## Documentation
 
 For detailed documentation, please visit [Vinsta Documentation](https://github.com/koompi/vinsta/docs/README.md).

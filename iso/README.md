@@ -45,7 +45,7 @@ ssh newusername@ipaddress # Replace with new user and ip
 ```
 
 
-### Note:
+## Note:
 If you can't ssh into the instance, you need to remove the old known ssh in the ~/.ssh/known_hosts
 
 ```bash
