@@ -47,3 +47,9 @@ A command line tool designed to streamline virtual machine management tasks. Wit
 ```bash
     make install # To install prebuilt
 ```
+
+### Command line Usage:
+![image info](../../assets/vinsta-cli.png)
+
+
+### WORK IN PROGRESS
