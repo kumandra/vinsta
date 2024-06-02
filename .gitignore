@@ -175,4 +175,4 @@ dist
 .DS_Store
 **/*.iso
 **/*.qcow2
-out
+#out
