@@ -1,5 +1,6 @@
 import { executeCommand } from "../shells/executeCommand";
 import type { VMOptions } from "../types/VMOptionsType";
+import { delay } from "../utils/delay";
 
 export const removeVirtualMachine = async (
   options: VMOptions
@@ -10,13 +11,10 @@ export const removeVirtualMachine = async (
     // Check if VM exists
     const vmExistsOutput = await executeCommand(`virsh dominfo ${name}`);
     if (!vmExistsOutput.includes("Name:")) {
+      console.log("Virtual machine not found.");
       throw new Error(`Virtual machine "${name}" not found`);
     }
-  } catch (error) {
-    console.log(`Virtual machine "${name}" not exists`); // Log error message with VM name
-  }
 
-  try {
     // Shutdown request domain
     await executeCommand(`virsh destroy ${name}`);
 
@@ -26,9 +24,11 @@ export const removeVirtualMachine = async (
     // delete the image of the request domain
     await executeCommand(`rm images/${name}.qcow2`);
     console.log("Virtual machine removed successfully.");
-  } catch (error) {
-    // Assuming any error during start indicates VM might not exist
-    console.log(`Failed to remove virtual machine "${name}"`); // Log error message with VM name
+  } catch (error: any) {
+    // Log error message with VM name
+    console.log(`Failed to remove virtual machine "${name}": ${error.message}`);
+    // Throw error to stop execution
+    throw error;
   } finally {
     // Optional: Additional actions regardless of success or failure (e.g., logging)
   }

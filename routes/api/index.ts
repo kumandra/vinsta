@@ -39,8 +39,8 @@ export const removeVM = async (req: Request, res: Response) => {
     const removeVM = await removeVirtualMachine(vmOptions);
     res.status(201).json({ message: "VM successfully removed", vm: removeVM });
   } catch (error) {
-    console.error("Error creating VM:", error);
-    res.status(500).json({ message: "Error creating VM", error });
+    console.error("Virtual machine not found:", error);
+    res.status(500).json({ message: "Virtual machine not found", error });
   }
 };
 
@@ -53,8 +53,8 @@ export const startVM = async (req: Request, res: Response) => {
     const startVM = await startVirtualMachine(vmOptions);
     res.status(201).json({ message: "Virtual Machine is starting", vm: startVM });
   } catch (error) {
-    console.error("Error starting VM:", error);
-    res.status(500).json({ message: "Error starting the VM", error });
+    console.error("Virtual machine not found:", error);
+    res.status(500).json({ message: "Virtual machine not found", error });
   }
 };
 
@@ -67,8 +67,8 @@ export const stopVM = async (req: Request, res: Response) => {
     const stopVM = await stopVirtualMachine(vmOptions);
     res.status(201).json({ message: "Virtual Machine is stopping", vm: stopVM });
   } catch (error) {
-    console.error("Error stoping VM:", error);
-    res.status(500).json({ message: "Error stopping the VM", error });
+    console.error("Virtual machine not found:", error);
+    res.status(500).json({ message: "Virtual machine not found", error });
   }
 };
 
@@ -81,8 +81,8 @@ export const checkInfoVM = async (req: Request, res: Response) => {
     const stopVM = await checkInfoVirtualMachine(vmOptions);
     res.status(201).json({ message: "Checking info of the virtual machine", vm: stopVM });
   } catch (error) {
-    console.error("Error failed to check VM:", error);
-    res.status(500).json({ message: "Error failed to check the virtual machine", error });
+    console.error("Virtual machine not found:", error);
+    res.status(500).json({ message: "Virtual machine not found", error });
   }
 };
 

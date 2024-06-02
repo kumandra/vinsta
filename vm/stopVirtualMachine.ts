@@ -4,14 +4,12 @@ import { delay } from "../utils/delay";
 
 export const stopVirtualMachine = async (options: VMOptions): Promise<void> => {
   const { name = "koompi" } = options;
-
   try {
-    // Check if VM exists
-    const vmExistsOutput = await executeCommand(`virsh dominfo ${name}`);
-    if (!vmExistsOutput.includes("Name:")) {
-      throw new Error(`Virtual machine "${name}" not found`);
-    }
-
+   // Check if VM exists
+   const vmExistsOutput = await executeCommand(`virsh dominfo ${name}`);
+   if (!vmExistsOutput.includes("Name:")) {
+     throw new Error(`Virtual machine "${name}" not found`);
+   }
     // Attempt graceful shutdown first
     await executeCommand(`virsh shutdown ${name}`);
     console.log(`Attempting graceful shutdown of virtual machine "${name}"`);
@@ -31,8 +29,12 @@ export const stopVirtualMachine = async (options: VMOptions): Promise<void> => {
     } else {
       console.log(`Virtual machine "${name}" stopped successfully.`);
     }
-  } catch (error) {
-    console.error(`Error stopping virtual machine "${name}":`, (error as Error).message);
-    // Handle other potential errors here (e.g., permission issues)
+  } catch (error: any) {
+    // Log error message with VM name
+    console.log(`Failed to stopped virtual machine "${name}": ${error.message}`);
+    // Throw error to stop execution
+    throw error;
+  } finally {
+    // Optional: Additional actions regardless of success or failure (e.g., logging)
   }
 };
