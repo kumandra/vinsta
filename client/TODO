@@ -1,2 +1,10 @@
 remove SSH Known Host after install the OS in short after stop the vm when finished install, and when calling start_vm()
 we remove ~/.ssh/known_host and the contain IPaddress of the virtual machine
+
+
+ implement ssh argument, vinsta --ssh
+
+ it will ask vm name and if never ssh before, it will ask for username and password
+
+ it will build ssh  command and also save it for later, next time,  just write vm name and it will ssh into it, ofc, need
+ to input password.

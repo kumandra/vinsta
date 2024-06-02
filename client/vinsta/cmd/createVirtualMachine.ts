@@ -1,8 +1,5 @@
 import inquirer from "inquirer";
 import axios from "axios";
-import * as fs from "fs";
-import * as path from "path";
-import os from "os";
 import ora from "ora"; // Import ora library
 import { getServerConfig } from "../utils/config";
 
@@ -61,7 +58,7 @@ export async function createVirtualMachine() {
     },
   ]);
   const spinner = ora("Sending request...").start(); // Create spinner instance
-  
+
   // Read environment variables from $HOME/.vinsta/env
   const serverConfig = getServerConfig();
   if (!serverConfig) {
@@ -78,8 +75,14 @@ export async function createVirtualMachine() {
         "Content-Type": "application/json"
       }
     });
-    spinner.succeed("Virtual machine creation request sent successfully"); // Stop spinner on success
-    console.log(response.data);
+    // Check if the virtual machine was successfully removed
+    if (response.data.message === "VM created successfully") {
+      spinner.succeed("Virtual machine created successfully"); // Stop spinner on success
+      console.log(response.data);
+    } else {
+      spinner.fail("Failed to create virtual machine"); // Stop spinner on error
+      console.error("Server response:", response.data);
+    }
   } catch (error: any) {
     spinner.fail("Error sending request to the server"); // Stop spinner on error
     if (error.response) {

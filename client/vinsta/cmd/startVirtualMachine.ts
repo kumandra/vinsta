@@ -1,5 +1,3 @@
-// stop.ts
-
 import inquirer from "inquirer";
 import { getServerConfig } from "../utils/config";
 import ora from 'ora';
@@ -32,8 +30,13 @@ export async function startVirtualMachine() {
         "Content-Type": "application/json"
       }
     });
-    spinner.succeed("Virtual machine start request sent successfully"); // Stop spinner on success
-    console.log(response.data);
+    // Check if the virtual machine was successfully started
+    if (response.data.message === "Virtual Machine is starting") {
+      spinner.succeed("Virtual machine started successfully"); // Stop spinner on success
+    } else {
+      spinner.fail("Failed to start virtual machine"); // Stop spinner on error
+      console.error("Server response:", response.data);
+    }
   } catch (error: any) {
     spinner.fail("Error sending request to the server"); // Stop spinner on error
     if (error.response) {

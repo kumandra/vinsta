@@ -22,7 +22,7 @@ export const removeVirtualMachine = async (
     await executeCommand(`virsh undefine --nvram ${name}`);
 
     // delete the image of the request domain
-    await executeCommand(`rm images/${name}.qcow2`);
+    await executeCommand(`rm -rf images/${name}.qcow2`);
     console.log("Virtual machine removed successfully.");
   } catch (error: any) {
     // Log error message with VM name

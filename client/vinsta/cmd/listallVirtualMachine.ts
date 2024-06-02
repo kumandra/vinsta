@@ -1,5 +1,3 @@
-// stop.ts
-
 import inquirer from "inquirer";
 
 export async function listallVirtualMachine() {
