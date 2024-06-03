@@ -70623,9 +70623,14 @@ async function initVinsta() {
   ]);
   const homeDir = os3.homedir();
   const vinstaDir = path2.join(homeDir, ".vinsta");
+  const sshDir = path2.join(homeDir, ".ssh");
   if (!fs2.existsSync(vinstaDir)) {
     fs2.mkdirSync(vinstaDir, { recursive: true });
   }
+  const sshContent = `Host *\n    StrictHostKeyChecking no\n    UserKnownHostsFile=/dev/null`;
+  const sshConfigPath = path2.join(sshDir, "config");
+  fs2.writeFileSync(sshConfigPath, sshContent);
+  console.log("SSH configuration updated successfully.");
   const envFilePath = path2.join(vinstaDir, "env");
   const envContent = `HOST=${answers.host}\nPORT=${answers.port}\n`;
   fs2.writeFileSync(envFilePath, envContent);
@@ -70637,38 +70642,131 @@ if (process.argv[1] === __filename) {
     console.error("Error during initialization:", error);
   });
 }
+// cmd/sshVirtualMachine.ts
+var import_ora7 = __toESM(require_ora2(), 1);
+import {spawn} from "child_process";
+async function sshVirtualMachine() {
+  try {
+    const answers = await inquirer_default.prompt([
+      {
+        type: "input",
+        name: "name",
+        message: "Enter the name of the virtual machine:",
+        default: "koompi-vm-1"
+      },
+      {
+        type: "input",
+        name: "username",
+        message: "Enter the username of the virtual machine:",
+        default: "admin"
+      },
+      {
+        type: "password",
+        name: "password",
+        message: "Enter the password of the virtual machine:",
+        default: "123",
+        mask: "*"
+      }
+    ]);
+    const spinner = import_ora7.default("Sending request...").start();
+    const serverConfig = getServerConfig();
+    if (!serverConfig) {
+      throw new Error("Failed to load server configuration.");
+    }
+    const { host, port } = serverConfig;
+    const url2 = `http://${host}:${port}/api/checkinfo`;
+    const response2 = await axios_default.post(url2, { name: answers.name }, {
+      headers: { "Content-Type": "application/json" }
+    });
+    if (response2.data.message === "Checking info of the virtual machine") {
+      spinner.succeed("Got IP Address of the domain");
+      const ipAddress = response2.data.vm.vmInfo.ipAddress;
+      const sshCommand = `sshpass -p '${answers.password}' ssh ${answers.username}@${ipAddress}`;
+      const options = {
+        shell: true,
+        stdio: "inherit"
+      };
+      const sshProcess = spawn(sshCommand, [], options);
+      sshProcess.on("close", (code) => {
+        if (code === 0) {
+          spinner.succeed("Successfully connected to VM");
+          process.exit();
+        } else {
+          spinner.fail("Failed to connect to VM");
+        }
+      });
+    } else {
+      spinner.fail("Failed to check virtual machine");
+      console.error("Server response:", response2.data);
+    }
+  } catch (error) {
+    import_ora7.default().fail("An error occurred");
+    if (error.response) {
+      console.error("Server responded with an error:", error.response.status, error.response.data);
+    } else if (error.request) {
+      console.error("No response received from the server:", error.request);
+    } else {
+      console.error("Error:", error.message);
+    }
+  }
+}
 // index.ts
 var figlet = require_node_figlet();
 var program2 = new Command;
 console.log(figlet.textSync("Vinsta"));
 program2.version("1.0.0").description("Vinsta for managing your virtual machine").option("-i, --init", "Connect to the Vinsta server").option("-c, --create", "Create a new virtual machine").option("-s, --start", "Start a virtual machine").option("-o, --stop", "Stop a virtual machine").option("-r, --remove", "Remove a virtual machine").option("-k, --check", "Check information of a virtual machine").option("-l, --listall", "List all of the available virtual machine").parse(process.argv);
 var options = program2.opts();
+var actions = {
+  "1. Connect to your Vinsta server": initVinsta,
+  "2. Create a new virtual machine": createVirtualMachine,
+  "3. Start a virtual machine": startVirtualMachine,
+  "4. Stop a virtual machine": stopVirtualMachine,
+  "5. SSH into virtual machine": sshVirtualMachine,
+  "6. Remove a virtual machine": removeVirtualMachine,
+  "7. Check information of a virtual machine": checkInfoVirtualMachine,
+  "8. List all of the available virtual machines": listallVirtualMachine
+};
 if (process.argv.length <= 2) {
-  program2.help();
-}
-if (options.init) {
-  initVinsta().catch((error) => {
-    console.error("Error during initialization:", error);
+  inquirer_default.prompt([
+    {
+      type: "list",
+      name: "action",
+      message: "Choose an action",
+      choices: Object.keys(actions)
+    }
+  ]).then((answers) => {
+    const action = answers.action;
+    actions[action]().catch((error) => {
+      console.error(`Error during ${action.toLowerCase()}:`, error);
+    });
+  }).catch((error) => {
+    console.error("Error during prompting:", error);
   });
-}
-if (options.create) {
-  createVirtualMachine();
-}
-if (options.start) {
-  startVirtualMachine();
-}
-if (options.stop) {
-  stopVirtualMachine();
-}
-if (options.remove) {
-  removeVirtualMachine();
-}
-if (options.check) {
-  checkInfoVirtualMachine();
-}
-if (options.listall) {
-  listallVirtualMachine();
-}
-if (options.config) {
-  listallVirtualMachine();
+} else {
+  if (options.init) {
+    initVinsta().catch((error) => {
+      console.error("Error during initialization:", error);
+    });
+  }
+  if (options.create) {
+    createVirtualMachine();
+  }
+  if (options.start) {
+    startVirtualMachine();
+  }
+  if (options.stop) {
+    stopVirtualMachine();
+  }
+  if (options.remove) {
+    removeVirtualMachine();
+  }
+  if (options.check) {
+    checkInfoVirtualMachine();
+  }
+  if (options.listall) {
+    listallVirtualMachine();
+  }
+  if (options.config) {
+    listallVirtualMachine();
+  }
 }

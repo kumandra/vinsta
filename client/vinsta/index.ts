@@ -1,9 +1,11 @@
 #!/usr/bin/env bun
 
 import { Command } from "commander";
-import { createVirtualMachine, stopVirtualMachine, startVirtualMachine, removeVirtualMachine, checkInfoVirtualMachine} from "./cmd";
-import { listallVirtualMachine } from "./cmd/listallVirtualMachine";
-import { initVinsta } from "./cmd/initVinsta";
+import inquirer from "inquirer";
+import { createVirtualMachine, stopVirtualMachine, startVirtualMachine,
+   removeVirtualMachine, checkInfoVirtualMachine, sshVirtualMachine,
+   listallVirtualMachine, initVinsta } from "./cmd";
+
 const figlet = require("figlet");
 
 const program = new Command();
@@ -24,38 +26,63 @@ program
 
 const options = program.opts();
 
-// Check if no options are provided other than the script name
+// Define the actions
+const actions = {
+  "1. Connect to your Vinsta server": initVinsta,
+  "2. Create a new virtual machine": createVirtualMachine,
+  "3. Start a virtual machine": startVirtualMachine,
+  "4. Stop a virtual machine": stopVirtualMachine,
+  "5. SSH into virtual machine": sshVirtualMachine,
+  "6. Remove a virtual machine": removeVirtualMachine,
+  "7. Check information of a virtual machine": checkInfoVirtualMachine,
+  "8. List all of the available virtual machines": listallVirtualMachine,
+};
+
+// Define the type for the actions keys
+type ActionKey = keyof typeof actions;
+
+// If no options are provided, display the interactive menu
 if (process.argv.length <= 2) {
-  program.help(); // Display help message
-}
-
-if (options.init) {
-  initVinsta().catch((error) => {
-    console.error("Error during initialization:", error);
+  inquirer.prompt<{ action: ActionKey }>([
+    {
+      type: "list",
+      name: "action",
+      message: "Choose an action",
+      choices: Object.keys(actions) as ActionKey[],
+    },
+  ]).then((answers) => {
+    const action = answers.action;
+    actions[action]().catch((error: any) => {
+      console.error(`Error during ${action.toLowerCase()}:`, error);
+    });
+  }).catch((error) => {
+    console.error("Error during prompting:", error);
   });
-}
-if (options.create) {
-  createVirtualMachine();
-}
-if (options.start) {
-  startVirtualMachine();
-}
-
-if (options.stop) {
-  stopVirtualMachine();
-}
-
-if (options.remove) {
-  removeVirtualMachine();
-}
-
-if (options.check) {
-  checkInfoVirtualMachine();
-}
-if (options.listall) {
-  listallVirtualMachine();
-}
-
-if (options.config) {
-  listallVirtualMachine();
+} else {
+  if (options.init) {
+    initVinsta().catch((error) => {
+      console.error("Error during initialization:", error);
+    });
+  }
+  if (options.create) {
+    createVirtualMachine();
+  }
+  if (options.start) {
+    startVirtualMachine();
+  }
+  if (options.stop) {
+    stopVirtualMachine();
+  }
+  if (options.remove) {
+    removeVirtualMachine();
+  }
+  if (options.check) {
+    checkInfoVirtualMachine();
+  }
+  if (options.listall) {
+    listallVirtualMachine();
+  }
+  if (options.config) {
+    listallVirtualMachine();
+  }
 }
