@@ -6,6 +6,7 @@
   "vinsta": "link:vinsta",
   "scripts": {
     "build": "bun build --target=node ./index.ts --outdir ./out",
+    "start": "bun ./out/index.js",
     "install": "bun install"
   },
   "module": "./out/index.js",
