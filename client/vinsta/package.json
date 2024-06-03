@@ -1,8 +1,8 @@
 {
   "name": "vinsta",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "bin": {
-    "vinsta": "./out/index.js"
+    "vinsta": "./index.ts"
   },
   "vinsta": "link:vinsta",
   "scripts": {
@@ -10,7 +10,7 @@
     "start": "bun ./out/index.js",
     "install": "bun install"
   },
-  "module": "./out/index.js",
+  "module": "index.ts",
   "type": "module",
   "devDependencies": {
     "@types/bun": "latest",
